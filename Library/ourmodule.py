@@ -2,6 +2,7 @@ import pickle
 from tkinter import *
 from tkinter import messagebox as mbox
 import os
+from math import inf
 
 
 def byte(w, path1):
@@ -70,9 +71,9 @@ def summary(f, askentry):
         for key in keys:
             s = 0
             kv = 0
-            for node in f:
-                s += float(node[key])
-                kv += float(node[key])*float(node[key])
+            for node in f.keys():
+                s += float(f[node][key])
+                kv += float(f[node][key])*float(f[node][key])
             average[key] = float(s)/k
             kvadr[key] = kv/k - average[key]*average[key]
             disp[key] = (kv - 2*average[key]*s + k*average[key]*average[key])/(k-1)
@@ -81,8 +82,9 @@ def summary(f, askentry):
     n = path.find("\Scripts")
     path1 = os.path.join(path[0:n] + "\Output", outname)
     fileout = open(path1, "w")
-    for node in f:
-        print(node['name'], node['year'], node['dev'], node['mass'], node['efmass'], node['stages'], file=fileout)
+    for node in f.keys():
+        print(f[node]['name'], f[node]['year'], f[node]['dev'], f[node]['mass'], f[node]['efmass'], f[node]['stages'],
+              file=fileout)
     print("Средние значения", file=fileout)
     print("Год: ", average['year'], "Отклонение от среднего арифметического: ", kvadr['year']**0.5,
           "Дисперсия: ", disp['year'], file=fileout)
@@ -94,37 +96,8 @@ def summary(f, askentry):
           "Дисперсия: ", disp['stages'], file=fileout)
     mbox.showinfo("Сохранено!", "Сохранение успешно")
 
-def find_mensh(w, key, num):
-    """
-    Автор: Миронюк Даниил
-    Функция поиска записей, значение в поле key которых меньше num
-    :param w: Словарь словарей с данными базы
-    :param num: Значение столбца
-    :param key: Ключ столбца, в котором происходит поиск
-    :return: Список подходящих записей
-    """
-    f = []
-    for a in w.keys():
-        if float(w[a][key]) <= num:
-            f.append(w[a])
-    return f
 
-def find_bolsh(w, key, num):
-    """
-    Автор: Игуменова Марта
-    Функция поиска записей, значение в поле key которых больше num
-    :param w: Словарь словарей с данными базы
-    :param num: Значение столбца
-    :param key: Ключ столбца, в котором происходит поиск
-    :return: Список подходящих записей
-    """
-    f = []
-    for a in w.keys():
-        if float(w[a][key]) >= num:
-            f.append(w[a])
-    return f
-
-def find_between(w, key, min, max):
+def find_between(w, key, minnum=-float(inf), maxnum=float(inf)):
     """
     Автор: Животов Глеб
     Функция поиска записей, значение в поле key которых больше min и меньше max
@@ -134,10 +107,16 @@ def find_between(w, key, min, max):
     :param key: Ключ столбца, в котором происходит поиск
     :return: Список подходящих записей
     """
-    f = []
+    if minnum > maxnum:
+        temp = minnum
+        minnum = maxnum
+        maxnum = temp
+    f = {}
+    i = 0
     for a in w.keys():
-        if (float(w[a][key]) >= min) & (float(w[a][key]) <= max):
-            f.append(w[a])
+        if (float(w[a][key]) >= minnum) & (float(w[a][key]) <= maxnum):
+            f[str(i)] = w[a]
+            i += 1
     return f
 
 def find_name(w,name):
@@ -153,7 +132,7 @@ def find_name(w,name):
             f.append(w[i])
     return f
 
-def add_node(w,new_name,new_year,new_dev,new_mass,new_efmss,new_stages):
+def add_node(w,new_name='',new_year='',new_dev='',new_mass='',new_efmass='',new_stages=''):
     """
     Функция добавления записи в словарь словарей
     Автор: Животов Глеб
@@ -167,25 +146,19 @@ def add_node(w,new_name,new_year,new_dev,new_mass,new_efmss,new_stages):
     :return: Изменённый словарь словарей базы данных
     """
     i=0
-    nname = new_name
-    nyear = new_year
-    ndev = new_dev
-    nmass = new_mass
-    nefmass = new_efmss
-    nstages = new_stages
     while str(i) in w.keys():
         i += 1
     w[str(i)] = {
-        "name": nname,
-        "year": nyear,
-        "dev": ndev,
-        "mass": nmass,
-        "efmass": nefmass,
-        "stages": nstages
+        "name": new_name,
+        "year": new_year,
+        "dev": new_dev,
+        "mass": new_mass,
+        "efmass": new_efmass,
+        "stages": new_stages
     }
     return w
 
-def change_node(w, key, cname, cyear, cdev, cmass, cefmass, cstages):
+def change_node(w, key, cname='', cyear='', cdev='', cmass='', cefmass='', cstages=''):
     """
     Функция изменения существующей записи
     Автор: Миронюк Даниил
@@ -199,12 +172,18 @@ def change_node(w, key, cname, cyear, cdev, cmass, cefmass, cstages):
     :param cstages: Новое количество ступеней
     :return: Изменённый словарь словарей
     """
-    w[str(key)]["name"] = cname
-    w[str(key)]["year"] = cyear
-    w[str(key)]["dev"] = cdev
-    w[str(key)]["mass"] = cmass
-    w[str(key)]["efmass"] = cefmass
-    w[str(key)]["stages"] = cstages
+    if cname != '':
+        w[str(key)]["name"] = cname
+    if cyear != '':
+        w[str(key)]["year"] = cyear
+    if cdev != '':
+        w[str(key)]["dev"] = cdev
+    if cmass != '':
+        w[str(key)]["mass"] = cmass
+    if cefmass != '':
+        w[str(key)]["efmass"] = cefmass
+    if cstages != '':
+        w[str(key)]["stages"] = cstages
     return w
 
 def delete_node(w, key, multibox):

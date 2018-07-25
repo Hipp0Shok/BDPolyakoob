@@ -3,6 +3,7 @@ import pickle
 import os
 from tkinter import messagebox as mbox
 import sys
+from math import inf
 
 path = os.getcwd()
 n = path.find("\Scripts")
@@ -178,7 +179,7 @@ def load_base_button():
 
 
 # **********************************************************************************************************************
- 
+
 
 def open_w_summary(f, bgcolor1, bgcolor3, mainfont, window):
     """
@@ -210,155 +211,7 @@ def open_w_summary(f, bgcolor1, bgcolor3, mainfont, window):
 
 # **********************************************************************************************************************
 
-
-def open_w_findmensh(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
-    """
-    Функция, вызываемая при нажатии кнопки "Найти меньше". Создаёт окно для ввода интересующих данных и запуска функции
-    поиска записей со значением выбранного поля меньше заданного
-    Автор: Животов Глеб
-    :param w: Словарь словарей базы данных
-    :param bgcolor1: Цвет фона 1
-    :param bgcolor2: Цвет фона 2
-    :param bgcolor3: Цвет фона 3
-    :param mainfont: Список - Название шрифта, размер
-    :return: None
-    """
-    bolshwind = Toplevel(root)
-    bolshwind.title("Найти записи меньше опредленого значения")
-    bolshwind.config(bg=bgcolor3)
-    message = Label(bolshwind, text="Выберете интересующий ключ и введите значение", bg=bgcolor3, font=mainfont)
-    message.grid(row=0, column=1)
-    kluchi = ["Год", "Масса", "Эф. масса", "Ступени"]
-    kluch = StringVar()
-    kluch.set(kluchi[0])
-    opt = OptionMenu(bolshwind, kluch, *kluchi)
-    opt.config(bg=bgcolor2, font=mainfont)
-    opt.grid(row=1, column=0, sticky=EW)
-    edit = Entry(bolshwind, width=20)
-    edit.grid(row=1, column=1, sticky=EW)
-    edit.insert(0, "0")
-
-    def start(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
-        """
-
-        :param w:
-        :return:
-        """
-        try:
-            num = int(edit.get())
-        except ValueError or TypeError:
-            mbox.showerror("Неверный ввод", "Введено неверное значение.")
-            return
-        message.grid_remove()
-        opt.grid_remove()
-        start_function.grid_remove()
-        edit.grid_remove()
-        quitbut1.grid_remove()
-        key = kluch.get()
-        if key == "Год":
-            key = "year"
-        elif key == "Масса":
-            key = "mass"
-        elif key == "Эф. масса":
-            key = "efmass"
-        elif key == "Ступени":
-            key = "stages"
-        f = find_mensh(w, key, num)
-        label = Label(bolshwind, text="Записи с параметром " + str(key) + " меньше " + str(num), bg=bgcolor1, font=mainfont)
-        label.grid(row=0, column=0)
-
-        multibox = MultiListbox(bolshwind, (("Название", 17), ("Год", 17), ('Разработчик', 17), ('Масса', 17),
-                                     ('Эфф. масса', 17), ('Ступени', 17)))
-        multibox.grid(row=1, column=0)
-        itogo = Button(bolshwind, text="Подвести итоги", bg=bgcolor2, font=mainfont)
-        itogo.grid(row=3, column=0, sticky=NSEW)
-        itogo.bind("<Button-1>", lambda e: open_w_summary(f, bgcolor1, bgcolor3, mainfont, bolshwind))
-        for i in f:
-            multibox.insert(END, (str(i['name']), str(i['year']), str(i['dev']), str(i['mass']),
-                                  str(i['efmass']), str(i['stages'])))
-        quitbut1.grid(row=4, columnspan=3, sticky=EW)
-
-    start_function = Button(bolshwind, text="Старт", bg=bgcolor2, font=mainfont)
-    start_function.grid(row=1, column=2, sticky=EW)
-    quitbut1 = Button(bolshwind, text="Выход", command=bolshwind.destroy, font=mainfont, bg=bgcolor2)
-    quitbut1.grid(row=3, columnspan=3, sticky=EW)
-    start_function.bind("<Button-1>", lambda e: start(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-    bolshwind.mainloop()
-
 # **********************************************************************************************************************
-
-
-def open_w_findbolsh(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
-    """
-    Функция, вызываемая при нажатии кнопки "Найти больше". Создаёт окно для ввода интересующих данных и запуска функции
-    поиска записей со значением выбранного поля больше заданного
-    Автор: Миронюк Даниил
-    :param w: Словарь словарей базы данных
-    :param bgcolor1: Цвет фона 1
-    :param bgcolor2: Цвет фона 2
-    :param bgcolor3: Цвет фона 3
-    :param mainfont: Список - Название фона, размер фона
-    :return: None
-    """
-    bolshwind = Toplevel(root)
-    bolshwind.config(bg=bgcolor3)
-    bolshwind.title("Найти записи больше опредленого значения")
-    message = Label(bolshwind, text="Выберете интересующий ключ и введите значение", bg=bgcolor3, font=mainfont)
-    message.grid(row=0, column=1)
-    kluchi = ["Год", "Масса", "Эф. масса", "Ступени"]
-    kluch = StringVar()
-    kluch.set(kluchi[0])
-    opt = OptionMenu(bolshwind, kluch, *kluchi)
-    opt.config(bg=bgcolor2, font=mainfont)
-    opt.grid(row=1, column=0, sticky=EW)
-    edit = Entry(bolshwind, width=20)
-    edit.grid(row=1, column=1, sticky=EW)
-    edit.insert(0, "0")
-
-    def start(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
-        """
-        :param w:
-        :return:
-        """
-        try:
-            num = int(edit.get())
-        except ValueError or TypeError:
-            mbox.showerror("Неверный ввод", "Введено неверное значение.")
-            return
-        message.grid_remove()
-        opt.grid_remove()
-        start_function.grid_remove()
-        edit.grid_remove()
-        key = kluch.get()
-        if key == "Год":
-            key = "year"
-        elif key == "Масса":
-            key = "mass"
-        elif key == "Эф. масса":
-            key = "efmass"
-        elif key == "Ступени":
-            key = "stages"
-        f = find_bolsh(w, key, num)
-        label = Label(bolshwind, text="Записи с параметром " + str(key) + " больше " + str(num), bg=bgcolor1, font=mainfont)
-        label.grid(row=0, column=0)
-
-        multibox = MultiListbox(bolshwind, (("Название", 17), ("Год", 17), ('Разработчик', 17), ('Масса', 17),
-                                     ('Эфф. масса', 17), ('Ступени', 17)))
-        multibox.grid(row=1, column=0)
-        itogo = Button(bolshwind, text="Подвести итоги", bg=bgcolor2, font=mainfont)
-        itogo.grid(row=3, column=0, sticky=NSEW)
-        itogo.bind("<Button-1>", lambda e: open_w_summary(f, bgcolor1, bgcolor3, mainfont, bolshwind))
-        for i in f:
-            multibox.insert(END, (str(i['name']), str(i['year']), str(i['dev']), str(i['mass']),
-                                  str(i['efmass']), str(i['stages'])))
-        quitbut1.grid(row=4, sticky=EW)
-    start_function = Button(bolshwind, text="Старт", bg = bgcolor2, font=mainfont)
-    start_function.grid(row=1, column=2, sticky=EW)
-    quitbut1 = Button(bolshwind, text="Выход", command=bolshwind.destroy, font=mainfont, bg=bgcolor2)
-    quitbut1.grid(row=3, columnspan=3, sticky=EW)
-    start_function.bind("<Button-1>", lambda e: start(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-    bolshwind.mainloop()
-
 
 # **********************************************************************************************************************
 
@@ -477,9 +330,6 @@ def open_w_findname(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
         :return:
         """
         name = edit.get()
-        if name == '':
-            mbox.showerror("Пустое имя", "Введено пустое имя")
-            return
         start_function.grid_remove()
         edit.grid_remove()
         message.grid_remove()
@@ -506,8 +356,6 @@ def open_w_findname(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
 
 
 # **********************************************************************************************************************
-
-
 
 
 def click_add_node(w, namee, yeare, deve, masse, efmasse, stagese, multibox):
@@ -544,7 +392,6 @@ def click_add_node(w, namee, yeare, deve, masse, efmasse, stagese, multibox):
     stagese.delete(0, END)
 
 # **********************************************************************************************************************
-
 
 
 def click_change_node(w, namee, yeare, deve, masse, efmasse, stagese, multibox, key):
@@ -588,7 +435,126 @@ def click_change_node(w, namee, yeare, deve, masse, efmasse, stagese, multibox, 
 # **********************************************************************************************************************
 
 
+def filter_summary(f, bgcolor1, bgcolor2, bgcolor3, mainfont, filter_top):
+    filter_summary_window = Toplevel(filter_top)
+    summary_message = Label(filter_summary_window, text="Результаты выборки по фильтру: ")
+    summary_message.grid(row=0, sticky=NSEW)
+    summary_multibox = MultiListbox(filter_summary_window, (("Название", 17), ("Год", 17), ('Разработчик', 17),
+                                                            ('Масса', 17), ('Эфф. масса', 17), ('Ступени', 17)))
+    summary_multibox.grid(row=1, sticky=NSEW)
+    for i in f.keys():
+        summary_multibox.insert(END, (f[i]["name"], f[i]["year"], f[i]["dev"], f[i]["mass"], f[i]["efmass"],
+                                      f[i]["stages"]))
+    output_button = Button(filter_summary_window, text="Подвести итоги")
+    output_button.grid(row=2, sticky=NSEW)
+    output_button.bind("<Button-1>", lambda e: open_w_summary(f, bgcolor1, bgcolor3, mainfont, filter_summary_window))
 
+
+def filter_start_click(w, bgcolor1, bgcolor2, bgcolor3, mainfont, year_from_entry, year_to_entry,
+                       mass_from_entry, mass_to_entry, efmass_from_entry, efmass_to_entry,
+                       stages_from_entry, stages_to_entry, filter_top):
+    from_values = []
+    tempyear = year_from_entry.get()
+    from_values.append(tempyear)
+    tempyear = mass_from_entry.get()
+    from_values.append(tempyear)
+    tempyear = efmass_from_entry.get()
+    from_values.append(tempyear)
+    tempyear = stages_from_entry.get()
+    from_values.append(tempyear)
+    for i in range(len(from_values)):
+        if from_values[i] == '':
+            from_values[i] = -float(inf)
+        else:
+            try:
+                from_values[i] = float(from_values[i])
+            except ValueError:
+                mbox.showerror("Ошибка!", "Введите верный тип данных")
+    to_values = []
+    tempyear = year_to_entry.get()
+    to_values.append(tempyear)
+    tempyear = mass_to_entry.get()
+    to_values.append(tempyear)
+    tempyear = efmass_to_entry.get()
+    to_values.append(tempyear)
+    tempyear = stages_to_entry.get()
+    to_values.append(tempyear)
+    for i in range(len(to_values)):
+        if to_values[i] == '':
+            to_values[i] = float(inf)
+        else:
+            try:
+                to_values[i] = float(to_values[i])
+            except ValueError:
+                mbox.showerror("Ошибка!", "Введите верный тип данных")
+    editable = w
+    keys = ["year", "mass", "efmass", "stages"]
+    for i in range(4):
+        editable = find_between(editable, keys[i], from_values[i], to_values[i])
+    filter_summary(editable, bgcolor1, bgcolor2, bgcolor3, mainfont, filter_top)
+
+
+def filter_window(w, bgcolor1, bgcolor2, bgcolor3, mainfont):
+    filter_top = Toplevel(root)
+    for x in range(5):
+        filter_top.grid_columnconfigure(x, weight=1)
+    filter_top.grid_columnconfigure(2, weight=4)
+    filter_top.grid_columnconfigure(4, weight=4)
+    for y in range(8):
+        filter_top.grid_rowconfigure(y, weight=1)
+    filter_top.config(bg=bgcolor3)
+    filter_top.title("Поиск по фильтру")
+    filter_message = Label(filter_top, text="Введите значения для поиска по фильтрам", bg=bgcolor3, font=mainfont)
+    filter_message.grid(row=0, column=0, columnspan=5, sticky=NSEW)
+    year_label = Label(filter_top, text="Год:", bg=bgcolor3, font=mainfont)
+    year_label.grid(row=1, column=0, sticky=N+S+W)
+    year_from_label = Label(filter_top, text="От", bg=bgcolor3, font=mainfont)
+    year_from_label.grid(row=1, column=1, sticky=NSEW)
+    year_from_entry = Entry(filter_top)
+    year_from_entry.grid(row=1, column=2, sticky=NSEW)
+    year_to_label = Label(filter_top, text="До", bg=bgcolor3, font=mainfont)
+    year_to_label.grid(row=1, column=3, sticky=NSEW)
+    year_to_entry = Entry(filter_top)
+    year_to_entry.grid(row=1, column=4, sticky=NSEW)
+    mass_label = Label(filter_top, text="Масса:", bg=bgcolor3, font=mainfont)
+    mass_label.grid(row=3, column=0, sticky=N+S+W)
+    mass_from_label = Label(filter_top, text="От", bg=bgcolor3, font=mainfont)
+    mass_from_label.grid(row=3, column=1, sticky=NSEW)
+    mass_from_entry = Entry(filter_top)
+    mass_from_entry.grid(row=3, column=2, sticky=NSEW)
+    mass_to_label = Label(filter_top, text="До", bg=bgcolor3, font=mainfont)
+    mass_to_label.grid(row=3, column=3, sticky=NSEW)
+    mass_to_entry = Entry(filter_top)
+    mass_to_entry.grid(row=3, column=4, sticky=NSEW)
+    efmass_label = Label(filter_top, text="Эффективная масса:", bg=bgcolor3, font=mainfont)
+    efmass_label.grid(row=4, column=0, sticky=N+S+W)
+    efmass_from_label = Label(filter_top, text="От", bg=bgcolor3, font=mainfont)
+    efmass_from_label.grid(row=4, column=1, sticky=NSEW)
+    efmass_from_entry = Entry(filter_top)
+    efmass_from_entry.grid(row=4, column=2, sticky=NSEW)
+    efmass_to_label = Label(filter_top, text="До", bg=bgcolor3, font=mainfont)
+    efmass_to_label.grid(row=4, column=3, sticky=NSEW)
+    efmass_to_entry = Entry(filter_top)
+    efmass_to_entry.grid(row=4, column=4, sticky=NSEW)
+    stages_label = Label(filter_top, text="Ступени:", bg=bgcolor3, font=mainfont)
+    stages_label.grid(row=5, column=0, sticky=N+S+W)
+    stages_from_label = Label(filter_top, text="От", bg=bgcolor3, font=mainfont)
+    stages_from_label.grid(row=5, column=1, sticky=NSEW)
+    stages_from_entry = Entry(filter_top)
+    stages_from_entry.grid(row=5, column=2, sticky=NSEW)
+    stages_to_label = Label(filter_top, text="До", bg=bgcolor3, font=mainfont)
+    stages_to_label.grid(row=5, column=3, sticky=NSEW)
+    stages_to_entry = Entry(filter_top)
+    stages_to_entry.grid(row=5, column=4, sticky=NSEW)
+    start_button = Button(filter_top, text="Поиск", bg=bgcolor2, font=mainfont)
+    start_button.grid(row=6, columnspan=5, sticky=NSEW)
+    start_button.bind("<Button-1>", lambda e: filter_start_click(w, bgcolor1, bgcolor2, bgcolor3, mainfont,
+                                                                 year_from_entry, year_to_entry,
+                                                                 mass_from_entry, mass_to_entry,
+                                                                 efmass_from_entry, efmass_to_entry, stages_from_entry,
+                                                                 stages_to_entry, filter_top))
+    exit_button = Button(filter_top, text="Выход", bg=bgcolor2, font=mainfont)
+    exit_button.grid(row=7, columnspan=5, sticky=NSEW)
 # **********************************************************************************************************************
 
 
@@ -630,11 +596,9 @@ img_rip_lil_pip = PhotoImage(file=path10)
 filename = PhotoImage(file=path2)
 background_label = Label(root, image=filename)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
-buttonframe = Frame(root)
-buttonframe.grid(row=0, column=1, columnspan=8)
 
 multiframe = Frame(root)
-multiframe.grid(row=1, column=1, columnspan=8)
+multiframe.grid(row=0, column=1, columnspan=8)
 
 editframe = Frame(root, bg=bgcolor1)
 editframe.grid(row=0, column=10, rowspan=33)
@@ -645,20 +609,12 @@ picbuttonframe.grid(row=0, column=0, rowspan=33)
 multibox = MultiListbox(multiframe, (("ID", 5), ("Название", 17), ("Год", 17), ('Разработчик', 17), ('Масса', 17),
                                      ('Эфф. масса', 17), ('Ступени', 17)))
 multibox.pack()
-
-MenshButton = Button(buttonframe, text="Найти меньше", width=15, bg=butcolor, font=mainfont)
-MenshButton.pack(side=LEFT)
-MenshButton.bind("<Button-1>", lambda e: open_w_findmensh(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-BolshButton = Button(buttonframe, text="Найти больше ", width=15, bg=butcolor, font=mainfont)
-BolshButton.pack(side=LEFT)
-BolshButton.bind("<Button-1>", lambda e: open_w_findbolsh(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-BetwButton = Button(buttonframe, text="Найти в диапазоне", width=15, bg=butcolor, font=mainfont)
-BetwButton.pack(side=LEFT)
-BetwButton.bind("<Button-1>", lambda e: open_w_findbetween(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-NameButton = Button(buttonframe, text="Поиск по имени", width=15, bg=butcolor, font=mainfont)
-NameButton.pack(side=LEFT)
-NameButton.bind("<Button-1>", lambda e: open_w_findname(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
-
+filterbut = Button(picbuttonframe, text='Фильтр')
+filterbut.grid(row=3)
+filterbut.bind("<Button-1>", lambda e: filter_window(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
+namebut = Button(picbuttonframe, text='Поиск по имени')
+namebut.grid(row=4)
+namebut.bind("<Button-1>", lambda e: open_w_findname(w, bgcolor1, bgcolor2, bgcolor3, mainfont))
 namel = Label(editframe, text="Название", bg=bgcolor1, font=mainfont)
 namel.grid(row=0, column=0)
 namee = Entry(editframe, bg=bgcolor1)
